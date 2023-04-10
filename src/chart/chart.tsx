@@ -1,15 +1,22 @@
-import { Column } from "@ant-design/charts";
-import { useEffect } from "react";
-// import getData from "../data/data";
+import { Column } from "@ant-design/plots";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 const Chart = () => {
+
+  const [data, setData] = useState([]);
+
   useEffect(() => {
-    const con = axios.get("localhost:3001/campaign-data");
-    console.log(con)
+    axios
+      .get("http://localhost:3001/campaign-data")
+      .then((res) => {
+        setData(res.data)
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+
   }, []);
-  // const data = await axios.get("localhost:3001/campaign-data");
-  // console.log("data:", data);
 
   const segment = [
     {
@@ -26,21 +33,21 @@ const Chart = () => {
     },
   ];
 
-  const transformedData = segment.flatMap((item) => [
+  const transformedData = data.flatMap((item) => [
     {
-      tag: item.tag,
+      tag: item["tag"],
       type: "count",
-      value: item.count,
+      value: item["count"],
     },
     {
-      tag: item.tag,
+      tag: item["tag"],
       type: "female",
-      value: item.female,
+      value: item["female"],
     },
     {
-      tag: item.tag,
+      tag: item["tag"],
       type: "male",
-      value: item.male,
+      value: item["male"],
     },
   ]);
 
@@ -53,7 +60,7 @@ const Chart = () => {
     groupField: "type",
     yAxis: {
       title: {
-        text: "Value",
+        text: "Count",
       },
     },
     Label: {
